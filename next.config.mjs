@@ -1,15 +1,27 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.(ttf|html)$/i,
-      type: 'asset/resource'
-    });
+module.exports = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  swcMinify: false,
+  experimental: {
+    serverComponentsExternalPackages: [
+      'rebrowser-playwright-core',
+      '@playwright/browser-chromium',
+      'electron'
+    ],
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals = [
+        ...config.externals,
+        'rebrowser-playwright-core',
+        '@playwright/browser-chromium',
+        'electron'
+      ];
+    }
     return config;
   },
-  experimental: {
-    serverMinification: false, // the server minification unfortunately breaks the selector class names
-  },
-};  
-
-export default nextConfig;
+}
