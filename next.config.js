@@ -5,23 +5,28 @@ module.exports = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  swcMinify: false,
-  experimental: {
-    serverComponentsExternalPackages: [
-      'rebrowser-playwright-core',
-      '@playwright/browser-chromium',
-      'electron'
-    ],
-  },
+  serverExternalPackages: [
+    'electron',
+    'rebrowser-playwright-core',
+    '@playwright/browser-chromium'
+  ],
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = [
         ...config.externals,
+        'electron',
         'rebrowser-playwright-core',
         '@playwright/browser-chromium',
-        'electron'
+        /^electron$/,
       ];
     }
+    
+    // Completely ignore electron
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'electron': false,
+    };
+    
     return config;
   },
 }
